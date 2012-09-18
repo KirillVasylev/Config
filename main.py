@@ -40,33 +40,35 @@ def open_file(File_Name):
     return  Config_Dict;
 
 def print_closed(Attr,Value):
-    return("<"+Attr+">"+Value+"</"+Attr+">"+"\n");
-
+    return("<"+Attr+">"+Value+"</"+Attr+">");
+def print_attrib(Attr,Value):
+    return (Attr+"=\""+ Value+ "\" ");
 def make_xml(Dict):
     xml= open("Conf.xml","w");
-    xml.write("""<?xml version="1.0" encoding="UTF-8"?>
-    <SCL xmlns="http://www.iec.ch/61850/2003/SCL"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="SCL_IED.xsd">""");
-    xml.write("""<Header id="ICD File" version="0" revision="1" toolID="1" nameStructure="IEDName" />""")
-    xml.write("<lED>\n");
-    xml.write(print_closed("name",Dict['name']));
-    xml.write(print_closed("desk",Dict['desc']));
+    xml.write("""<?xml version="1.0" encoding="UTF-8"?><SCL xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="SCL_IED.xsd">""");
+    #xml.write("""<Header id="ICD File" version="0" revision="1" toolID="1" nameStructure="IEDName" />""") непонятно зачем надо
+    xml.write("""<IED """);
+    xml.write(print_attrib("name",Dict['name']));
+    xml.write(print_attrib("desc",Dict['desc']));
+    xml.write(print_attrib("type",Dict['type']));
+    xml.write(print_attrib("manufacturer",Dict['manufacturer']));
+    xml.write(print_attrib("configversion",Dict['config_version']));
+    xml.write(">")
+
     for i in Dict['services']:
         xml.write(print_closed("Service",i));
     #обработка точек доступа
     for i in range(0, len(Dict['AccessPoint'])):
-        xml.write("<AccessPoint>");
-        xml.write(print_closed("name",Dict['AccessPoint'][i]));
-        xml.write(print_closed("deck",Dict['AccessPoint_deck'][i]));
-        xml.write(print_closed("router",Dict['router'][i]));
-        xml.write((print_closed("clock",Dict['clock'][i])))
-        
+        xml.write("<AccessPoint ");
+        xml.write(print_attrib("name",Dict['AccessPoint'][i]));
+        xml.write(print_attrib("deck",Dict['AccessPoint_deck'][i]));
+        xml.write(print_attrib("router",Dict['router'][i]));
+        xml.write((print_attrib("clock",Dict['clock'][i])));
+        xml.write(">");
+
         xml.write("</AccessPoint>");
-    xml.write(print_closed("type",Dict['type']));
-    xml.write(print_closed("manufacturer",Dict['manufacturer']));
-    xml.write(print_closed("configversion",Dict['config_version']));
-    xml.write("</lED>\n");
+
+    xml.write("</IED>");
     xml.write("""</SCL>""");
     xml.close();
 
